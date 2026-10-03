@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AtomNomi - Dunia Atom & Pohon Ajaib</title>
+    
+    <!-- Chart.js & Google Font Lucu untuk Anak-anak -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Mali:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Fredoka', cursive, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #E0F7FA;
+            background-image: 
+                radial-gradient(#B2EBF2 20%, transparent 20%),
+                radial-gradient(#FFF9C4 20%, transparent 20%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            color: #2C3E50;
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* BANNER JUDUL WARNA-WARNI */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: #FFFFFF;
+            padding: 16px 20px;
+            border-radius: 30px;
+            border: 4px solid #FFD54F;
+            box-shadow: 0 8px 0 #FBC02D;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            margin: 0;
+            background: linear-gradient(45deg, #FF5252, #FF9800, #4CAF50, #2196F3, #9C27B0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #576574;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* CARD STYLE A LA MAINAN (3D TIMBUL) */
+        .toy-card {
+            background: #FFFFFF;
+            border-radius: 28px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.08);
+            border: 4px solid #E0E0E0;
+            position: relative;
+        }
+
+        /* 1. MASKOT ATO */
+        .mascot-card {
+            border-color: #81C784;
+            box-shadow: 0 8px 0 #66BB6A;
+            background: #F1F8E9;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .mascot-avatar {
+            width: 75px;
+            height: 75px;
+            background: #AED581;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            border: 4px solid #FFFFFF;
+            box-shadow: 0 4px 0 #7CB342;
+            flex-shrink: 0;
+            animation: bounce 2s infinite alternate;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+
+        .speech-title {
+            font-size: 13px;
+            color: #33691E;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .speech-bubble {
+            font-size: 14px;
+            color: #333333;
+            line-height: 1.4;
+            margin: 4px 0 10px 0;
+        }
+
+        /* TOMBOL 3D MAINAN */
+        .toy-btn {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.1s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .toy-btn-teal {
+            background: #26A69A;
+            box-shadow: 0 5px 0 #00796B;
+        }
+        .toy-btn-teal:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #00796B;
+        }
+
+        .toy-btn-purple {
+            background: #7E57C2;
+            box-shadow: 0 5px 0 #512DA8;
+        }
+        .toy-btn-purple:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #512DA8;
+        }
+
+        .toy-btn-red {
+            background: #FF5252;
+            box-shadow: 0 5px 0 #D32F2F;
+        }
+        .toy-btn-red:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #D32F2F;
+        }
+
+        .toy-btn-blue {
+            background: #42A5F5;
+            box-shadow: 0 5px 0 #1976D2;
+        }
+        .toy-btn-blue:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #1976D2;
+        }
+
+        /* ARENA MAIN */
+        .playground {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .playground { grid-template-columns: 1fr; }
+        }
+
+        .gudang-card {
+            border-color: #FFB74D;
+            box-shadow: 0 8px 0 #FFA726;
+        }
+
+        .meja-card {
+            border-color: #BA68C8;
+            box-shadow: 0 8px 0 #AB47BC;
+        }
+
+        .card-title {
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .mobile-hint {
+            font-size: 11px;
+            color: #7E57C2;
+            text-align: center;
+            margin-bottom: 12px;
+            font-weight: 700;
+            background: #F3E5F5;
+            padding: 6px;
+            border-radius: 12px;
+        }
+
+        /* ATOM-ATOM MAINAN */
+        .atom-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .atom {
+            padding: 12px 16px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s;
+            touch-action: none;
+        }
+
+        .atom:active { transform: scale(0.95); }
+
+        .atom.green {
+            background: #66BB6A;
+            box-shadow: 0 5px 0 #388E3C;
+        }
+        .atom.biru {
+            background: #29B6F6;
+            box-shadow: 0 5px 0 #0288D1;
+        }
+        .atom.red {
+            background: #FF7043;
+            box-shadow: 0 5px 0 #F4511E;
+        }
+        .atom.orange {
+            background: #FFA726;
+            box-shadow: 0 5px 0 #FB8C00;
+        }
+
+        /* MEJA DROPZONE */
+        .drop-area {
+            min-height: 140px;
+            border: 3px dashed #CE93D8;
+            border-radius: 20px;
+            padding: 12px;
+            background: #FAF5FB;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .drop-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #AB47BC;
+            font-size: 13px;
+            font-weight: 600;
+            min-height: 110px;
+            text-align: center;
+        }
+
+        .dropped-atom {
+            padding: 8px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+        }
+
+        .dropped-atom.green { background: #E8F5E9; color: #2E7D32; border: 2px solid #66BB6A; }
+        .dropped-atom.biru  { background: #E1F5FE; color: #0277BD; border: 2px solid #29B6F6; }
+        .dropped-atom.red   { background: #FBE9E7; color: #D84315; border: 2px solid #FF7043; }
+        .dropped-atom.orange{ background: #FFF3E0; color: #E65100; border: 2px solid #FFA726; }
+
+        .remove-btn {
+            background: rgba(0, 0, 0, 0.1);
+            color: #424242;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+        .btn-group { display: flex; gap: 10px; }
+
+        /* GRAFIK POHON */
+        .chart-card {
+            border-color: #4FC3F7;
+            box-shadow: 0 8px 0 #29B6F6;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        .param-box {
+            background: #E1F5FE;
+            border-radius: 20px;
+            padding: 14px;
+            margin-top: 14px;
+            border: 2px solid #81D4FA;
+        }
+
+        .param-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .param-item {
+            background: #FFFFFF;
+            padding: 10px;
+            border-radius: 14px;
+            font-size: 11px;
+            line-height: 1.3;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.05);
+        }
+
+        /* BADGES */
+        .badge-card-box {
+            border-color: #FFF176;
+            box-shadow: 0 8px 0 #FFEE58;
+            background: #FFFDE7;
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .badge-card {
+            background: #FFFFFF;
+            border: 2px dashed #BDBDBD;
+            border-radius: 18px;
+            padding: 10px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .badge-icon {
+            font-size: 28px;
+            filter: grayscale(100%);
+            opacity: 0.3;
+        }
+
+        .badge-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: #9E9E9E;
+            margin-top: 4px;
+        }
+
+        .badge-card.unlocked {
+            background: #FFF9C4;
+            border: 2px solid #FBC02D;
+            box-shadow: 0 4px 0 #FDD835;
+        }
+
+        .badge-card.unlocked .badge-icon { filter: grayscale(0%); opacity: 1; }
+        .badge-card.unlocked .badge-name { color: #F57F17; }
+
+        /* MODAL POPUP */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: #FFFFFF;
+            border-radius: 30px;
+            max-width: 480px;
+            width: 100%;
+            padding: 24px;
+            border: 5px solid #4DD0E1;
+            box-shadow: 0 12px 0 #00ACC1;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .exp-box {
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            text-align: left;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        /* WATER GAME SIMULATION */
+        .water-game-box {
+            background: #E0F2F1;
+            border: 3px solid #80CBC4;
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .water-stack {
+            height: 70px;
+            background: #FFFFFF;
+            border: 2px dashed #B2DFDB;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            padding: 4px;
+            gap: 4px;
+            overflow-y: auto;
+            margin-bottom: 8px;
+        }
+
+        .water-drop {
+            width: 85%;
+            height: 20px;
+            border-radius: 10px;
+            background: #26C6DA;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- BANNER ATAS -->
+        <div class="header">
+            <h1>AtomNomi</h1>
+            <p>Racik 4 Atom Keuangan & Lihat Pohon Ajaibmu Tumbuh!</p>
+        </div>
+
+        <!-- MASKOT ATO -->
+        <div class="toy-card mascot-card">
+            <div class="mascot-avatar">🌱</div>
+            <div>
+                <div class="speech-title">Teman Belajar: Ato</div>
+                <div class="speech-bubble" id="mascot-text">
+                    <b>Atom Keuangan</b> adalah <b>susunan terkecil</b> dalam keuanganmu! Seperti nutrisi penyusun (makanan, air, & pupuk), atom ini langsung menentukan seberapa tinggi <b>Pohon Keuangan</b> impianmu tumbuh! 🌳✨
+                </div>
+                <button type="button" class="toy-btn toy-btn-teal" id="btn-ask-ato">💡 Rahasia 4 Atom</button>
+            </div>
+        </div>
+
+        <!-- ARENA MAIN -->
+        <div class="playground">
+            <!-- Gudang Atom -->
+            <div class="toy-card gudang-card">
+                <h3 class="card-title" style="color: #E65100;">🎒 Gudang Atom</h3>
+                <div class="mobile-hint">Ketuk/geser Atom ke Meja Racikan</div>
+                <div class="atom-list">
+                    <div class="atom green" draggable="true" data-type="hijau">
+                        <span>🥗 Kebutuhan</span>
+                        <span>🟢</span>
+                    </div>
+                    <div class="atom biru" draggable="true" data-type="biru">
+                        <span>🧸 Keinginan</span>
+                        <span>🔵</span>
+                    </div>
+                    <div class="atom red" draggable="true" data-type="merah">
+                        <span>🪙 Tabungan</span>
+                        <span>🔴</span>
+                    </div>
+                    <div class="atom orange" draggable="true" data-type="orange">
+                        <span>🍎 Investasi</span>
+                        <span>🟠</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meja Racikan -->
+            <div class="toy-card meja-card">
+                <h3 class="card-title" style="color: #6A1B9A;">🔮 Meja Racikan Molekul</h3>
+                <div class="drop-area" id="dropzone">
+                    <div class="drop-placeholder" id="placeholder">Sentuh/tarik atom ke sini...</div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="toy-btn toy-btn-purple" style="flex:1" id="btn-check" onclick="cekMolekul()">⚡ Cek Hasil</button>
+                    <button type="button" class="toy-btn toy-btn-red" style="flex:1" id="btn-reset" onclick="resetMolekul()">🔄 Bersihkan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRAFIK POHON -->
+        <div class="toy-card chart-card">
+            <div class="chart-header">
+                <div style="font-size: 16px; font-weight: 700; color: #0277BD;">📈 Pohon Keuangan Ajaib</div>
+                <div id="chart-status" style="font-size: 12px; font-weight: 700; color: #7E57C2;">
+                    Status: Belum Ada Atom
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="growthChart"></canvas>
+            </div>
+
+            <!-- PARAMETER -->
+            <div class="param-box">
+                <div style="font-size: 12px; font-weight: 700; color: #0277BD; text-transform: uppercase;">
+                    Fungsi Nutrisi Atom:
+                </div>
+                <div class="param-grid">
+                    <div class="param-item" style="border-left: 4px solid #66BB6A;">
+                        <b style="color: #2E7D32;">🟢 Kebutuhan</b><br>
+                        Air & tanah wajib agar pohon tidak layu.
+                    </div>
+                    <div class="param-item" style="border-left: 4px solid #29B6F6;">
+                        <b style="color: #0277BD;">🔵 Keinginan</b><br>
+                        Hiasan pita. Jangan terlalu banyak agar tidak berat!
+                    </div>
+                    <div class="param-item" style="border-left: 4px solid #FF7043;">
+                        <b style="color: #D84315;">🔴 Tabungan</b><br>
+                        Ember penampung air cadangan darurat.
+                    </div>
+                    <div class="param-item" style="border-left: 4px solid #FFA726;">
+                        <b style="color: #E65100;">🟠 Investasi</b><br>
+                        Pupuk ajaib pembuat buah manis!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEMARI LENCANA -->
+        <div class="toy-card badge-card-box">
+            <h3 style="margin: 0; text-align: center; font-size: 16px; color: #F57F17;">🏆 Koleksi Lencana Ajaib</h3>
+            <div class="badge-grid">
+                <div class="badge-card unlocked" id="badge-tunas">
+                    <div class="badge-icon">🌱</div>
+                    <div class="badge-name">Tunas Baru</div>
+                </div>
+                <div class="badge-card" id="badge-penabung">
+                    <div class="badge-icon">🪙</div>
+                    <div class="badge-name">Penabung Cilik</div>
+                </div>
+                <div class="badge-card" id="badge-investor">
+                    <div class="badge-icon">🍎</div>
+                    <div class="badge-name">Investor Jago</div>
+                </div>
+                <div class="badge-card" id="badge-pohon">
+                    <div class="badge-icon">🌳</div>
+                    <div class="badge-name">Pohon Raksasa</div>
+                </div>
+                <div class="badge-card" id="badge-pakar">
+                    <div class="badge-icon">⚡</div>
+                    <div class="badge-name">Pakar Racikan</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: ATOM EXPLANATION -->
+    <div class="modal-overlay" id="atomModal">
+        <div class="modal-card">
+            <div style="font-size: 45px;">🌳</div>
+            <h2 style="margin: 0 0 12px 0; color: #00838F; font-size: 20px;">Rahasia 4 Atom Keuangan</h2>
+            
+            <div class="exp-box" style="background: #E8F5E9; border-left: 4px solid #66BB6A;">
+                <b style="color: #2E7D32;">🥗 1. Atom Kebutuhan (Makanan Utama)</b><br>
+                Susunan terkecil wajib tiap hari agar pohonmu tidak layu. Contoh: Bekal nasi, pensil, dan buku.
+            </div>
+            <div class="exp-box" style="background: #E1F5FE; border-left: 4px solid #29B6F6;">
+                <b style="color: #0277BD;">🧸 2. Atom Keinginan (Hiasan Pohon)</b><br>
+                Pita hiasan pohon. Boleh ada sesekali, tapi kalau terlalu banyak bisa bikin ranting patah! Contoh: Mainan & es krim.
+            </div>
+            <div class="exp-box" style="background: #FBE9E7; border-left: 4px solid #FF7043;">
+                <b style="color: #D84315;">🪙 3. Atom Tabungan (Ember Air)</b><br>
+                Simpanan air untuk musim kemarau atau saat butuh mendadak. Contoh: Uang celengan.
+            </div>
+            <div class="exp-box" style="background: #FFF3E0; border-left: 4px solid #FFA726;">
+                <b style="color: #E65100;">🍎 4. Atom Investasi (Pupuk Ajaib)</b><br>
+                Pupuk super yang bikin pohon tumbuh tinggi dan berbuah manis! Contoh: Buku ilmu pengetahuan & les bakat.
+            </div>
+
+            <button type="button" class="toy-btn toy-btn-teal" style="width:100%; margin-top:8px;" id="btn-start-water-game">
+                🚿 Mainkan Game Menyiram Pohon
+            </button>
+            <button type="button" class="toy-btn toy-btn-red" style="width:100%; margin-top:8px;" id="btn-close-modal">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: WATER GAME -->
+    <div class="modal-overlay" id="waterGameModal">
+        <div class="modal-card" style="border-color: #80DEEA; box-shadow: 0 12px 0 #00ACC1;">
+            <div style="font-size: 45px;">🚿</div>
+            <h2 style="margin: 0 0 10px 0; color: #00838F; font-size: 20px;">Simulasi Siram Pohon</h2>
+            
+            <div class="water-game-box">
+                <div style="font-size: 50px; height: 75px; display:flex; align-items:center; justify-content:center;" id="growingTreeVisual">🌱</div>
+
+                <div class="water-stack" id="waterStackArea">
+                    <div style="font-size: 11px; color: #80CBC4; margin: auto;" id="stackPlaceholder">
+                        Klik tombol di bawah untuk menyiram!
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-around; font-size: 12px; font-weight:700;">
+                    <div>Tetesan: <span style="color:#00838F;" id="waterDays">0</span></div>
+                    <div>Skor: <span style="color:#00838F;" id="treePower">1.00x</span></div>
+                </div>
+            </div>
+
+            <p id="waterMotivationText" style="font-size: 12px; font-weight: 700; color: #7E57C2; margin-bottom: 12px;">
+                "Tindakan kecil harian akan menumbuhkan hasil yang besar!"
+            </p>
+
+            <button type="button" class="toy-btn toy-btn-blue" style="width:100%; margin-bottom:8px;" onclick="siramPohon()">
+                💧 Siram 1 Tetes Air
+            </button>
+            <button type="button" class="toy-btn toy-btn-purple" style="width:100%;" id="btn-finish-water-game">
+                🚀 Selesai & Kembali
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const placeholder = document.getElementById('placeholder');
+        const mascotText = document.getElementById('mascot-text');
+        const chartStatus = document.getElementById('chart-status');
+        const askAtoBtn = document.getElementById('btn-ask-ato');
+        
+        const modalOverlay = document.getElementById('atomModal');
+        const waterGameModal = document.getElementById('waterGameModal');
+        const btnStartWaterGame = document.getElementById('btn-start-water-game');
+        const btnCloseModal = document.getElementById('btn-close-modal');
+        const btnFinishWaterGame = document.getElementById('btn-finish-water-game');
+
+        const atoms = document.querySelectorAll('.atom');
+        let growthChart = null;
+
+        // CHART JS INITIALIZATION
+        try {
+            const canvas = document.getElementById('growthChart');
+            if (canvas && typeof Chart !== 'undefined') {
+                const ctx = canvas.getContext('2d');
+                growthChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'B12'],
+                        datasets: [{
+                            label: 'Tinggi Pohon',
+                            data: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+                            borderColor: '#7E57C2',
+                            backgroundColor: 'rgba(126, 87, 194, 0.15)',
+                            borderWidth: 4,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#7E57C2'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, max: 100, ticks: { font: { family: 'Fredoka', size: 10 } } },
+                            x: { ticks: { font: { family: 'Fredoka', size: 10 } } }
+                        }
+                    }
+                });
+            }
+        } catch (e) { console.warn(e); }
+
+        function openModal() { if (modalOverlay) modalOverlay.style.display = 'flex'; }
+        function closeModal() { if (modalOverlay) modalOverlay.style.display = 'none'; }
+
+        if (askAtoBtn) askAtoBtn.addEventListener('click', openModal);
+        if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
+
+        if (btnStartWaterGame) {
+            btnStartWaterGame.addEventListener('click', () => {
+                closeModal();
+                if (waterGameModal) waterGameModal.style.display = 'flex';
+            });
+        }
+        if (btnFinishWaterGame) {
+            btnFinishWaterGame.addEventListener('click', () => {
+                if (waterGameModal) waterGameModal.style.display = 'none';
+            });
+        }
+
+        // WATER GAME
+        let totalWaterCount = 0;
+        function siramPohon() {
+            totalWaterCount++;
+            const stackArea = document.getElementById('waterStackArea');
+            const stackPlaceholder = document.getElementById('stackPlaceholder');
+            const waterDays = document.getElementById('waterDays');
+            const treePower = document.getElementById('treePower');
+            const motivationText = document.getElementById('waterMotivationText');
+            const growingTreeVisual = document.getElementById('growingTreeVisual');
+
+            if (stackPlaceholder) stackPlaceholder.style.display = 'none';
+
+            const newDrop = document.createElement('div');
+            newDrop.className = 'water-drop';
+            newDrop.innerText = `💧 Tetesan Air #${totalWaterCount}`;
+
+            stackArea.appendChild(newDrop);
+            stackArea.scrollTop = stackArea.scrollHeight;
+
+            const power = Math.pow(1.01, totalWaterCount).toFixed(2);
+            waterDays.innerText = totalWaterCount;
+            treePower.innerText = `${power}x`;
+
+            const scaleVal = Math.min(1.8, 1 + (totalWaterCount * 0.05));
+            growingTreeVisual.style.transform = `scale(${scaleVal})`;
+
+            if (totalWaterCount >= 15) growingTreeVisual.innerText = "🌳🍎";
+            else if (totalWaterCount >= 8) growingTreeVisual.innerText = "🪴";
+            else if (totalWaterCount >= 4) growingTreeVisual.innerText = "🌿";
+
+            if (totalWaterCount === 1) motivationText.innerHTML = "🌱 <b>Awal Tunas:</b> Penyiraman pertama memberi nutrisi awal!";
+            else if (totalWaterCount === 10) motivationText.innerHTML = "🪴 <b>Ranting Kokoh:</b> Kebiasaan rutin membuat pertumbuhan makin mantap!";
+            else if (totalWaterCount >= 15) motivationText.innerHTML = "🌳🍎 <b>POHON RAKSASA!</b> Hasil dari ketekunan menyiram harian!";
+        }
+
+        // DROPZONE LOGIC
+        function addAtomToDropzone(type) {
+            if (placeholder) placeholder.style.display = 'none';
+
+            const newAtom = document.createElement('div');
+            let colorClass = 'green', title = '🥗 Kebutuhan';
+
+            if (type === 'biru') { colorClass = 'biru'; title = '🧸 Keinginan'; }
+            else if (type === 'merah') { colorClass = 'red'; title = '🪙 Tabungan'; }
+            else if (type === 'orange') { colorClass = 'orange'; title = '🍎 Investasi'; }
+
+            newAtom.className = `dropped-atom ${colorClass}`;
+            newAtom.dataset.type = type;
+            newAtom.innerHTML = `<span>${title}</span> <span class="remove-btn">✖</span>`;
+            
+            newAtom.addEventListener('click', (e) => {
+                e.stopPropagation();
+                newAtom.remove();
+                if (dropzone.querySelectorAll('.dropped-atom').length === 0) {
+                    if (placeholder) placeholder.style.display = 'flex';
+                }
+                updateRealtimeChart();
+            });
+
+            dropzone.appendChild(newAtom);
+            updateRealtimeChart();
+        }
+
+        // TOUCH & DRAG
+        let activeTouchType = null, touchClone = null;
+
+        atoms.forEach(atom => {
+            atom.addEventListener('click', () => addAtomToDropzone(atom.dataset.type));
+
+            atom.addEventListener('touchstart', (e) => {
+                activeTouchType = atom.dataset.type;
+                const touch = e.touches[0];
+                touchClone = atom.cloneNode(true);
+                touchClone.style.position = 'fixed';
+                touchClone.style.opacity = '0.85';
+                touchClone.style.pointerEvents = 'none';
+                touchClone.style.zIndex = '10000';
+                touchClone.style.width = atom.offsetWidth + 'px';
+                touchClone.style.left = (touch.clientX - atom.offsetWidth / 2) + 'px';
+                touchClone.style.top = (touch.clientY - atom.offsetHeight / 2) + 'px';
+                document.body.appendChild(touchClone);
+            }, { passive: true });
+
+            atom.addEventListener('touchmove', (e) => {
+                if (!touchClone) return;
+                if (e.cancelable) e.preventDefault();
+                const touch = e.touches[0];
+                touchClone.style.left = (touch.clientX - touchClone.offsetWidth / 2) + 'px';
+                touchClone.style.top = (touch.clientY - touchClone.offsetHeight / 2) + 'px';
+            }, { passive: false });
+
+            atom.addEventListener('touchend', (e) => {
+                if (!touchClone) return;
+                const touch = e.changedTouches[0];
+                const rect = dropzone.getBoundingClientRect();
+
+                if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                    touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                    addAtomToDropzone(activeTouchType);
+                }
+                if (touchClone) { touchClone.remove(); touchClone = null; }
+                activeTouchType = null;
+            });
+
+            atom.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', atom.dataset.type);
+            });
+        });
+
+        dropzone.addEventListener('dragover', (e) => e.preventDefault());
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const type = e.dataTransfer.getData('text/plain');
+            if (type) addAtomToDropzone(type);
+        });
+
+        // UPDATE CHART
+        function updateRealtimeChart() {
+            const placedAtoms = dropzone.querySelectorAll('.dropped-atom');
+            let countBlue = 0, countGreen = 0, countRed = 0, countOrange = 0;
+
+            placedAtoms.forEach(atom => {
+                if(atom.dataset.type === 'biru') countBlue++;
+                if(atom.dataset.type === 'hijau') countGreen++;
+                if(atom.dataset.type === 'merah') countRed++;
+                if(atom.dataset.type === 'orange') countOrange++;
+            });
+
+            let newPoints = [];
+
+            if (placedAtoms.length === 0) {
+                newPoints = Array(12).fill(10);
+                if (growthChart) {
+                    growthChart.data.datasets[0].borderColor = '#7E57C2';
+                    growthChart.data.datasets[0].backgroundColor = 'rgba(126, 87, 194, 0.15)';
+                    growthChart.data.datasets[0].data = newPoints;
+                    growthChart.update();
+                }
+                chartStatus.innerHTML = "Status: Belum Ada Atom";
+                return;
+            }
+
+            if (countRed === 0 && countOrange === 0) {
+                let current = 40;
+                let decay = countBlue > 0 ? 0.65 : 0.85;
+                for(let i = 0; i < 12; i++) {
+                    current = Math.max(0, current * decay);
+                    newPoints.push(current.toFixed(1));
+                }
+                if (growthChart) {
+                    growthChart.data.datasets[0].borderColor = '#FF5252';
+                    growthChart.data.datasets[0].backgroundColor = 'rgba(255, 82, 82, 0.15)';
+                }
+                chartStatus.innerHTML = "<span style='color: #FF5252;'>🔻 Turun! Keinginan Terlalu Banyak!</span>";
+            } else {
+                let current = 10;
+                let netPower = (countRed * 1.0) + (countOrange * 1.5) - (countBlue * 0.9);
+
+                if (netPower <= 0) {
+                    for(let i = 0; i < 12; i++) {
+                        current = Math.max(0, 35 * Math.pow(0.8, i));
+                        newPoints.push(current.toFixed(1));
+                    }
+                    if (growthChart) {
+                        growthChart.data.datasets[0].borderColor = '#FF5252';
+                        growthChart.data.datasets[0].backgroundColor = 'rgba(255, 82, 82, 0.15)';
+                    }
+                    chartStatus.innerHTML = "<span style='color: #FF5252;'>⚠️ Keinginan Melebihi Tabungan!</span>";
+                } else {
+                    for(let i = 0; i < 12; i++) {
+                        let investBoost = 1 + (countOrange * 0.12 * (i / 4));
+                        current = Math.min(100, current * (1 + netPower * 0.15) * investBoost);
+                        newPoints.push(current.toFixed(1));
+                    }
+
+                    if (countOrange > 0) {
+                        if (growthChart) {
+                            growthChart.data.datasets[0].borderColor = '#FFA726';
+                            growthChart.data.datasets[0].backgroundColor = 'rgba(255, 167, 38, 0.2)';
+                        }
+                        chartStatus.innerHTML = "<span style='color: #E65100;'>🚀 Melesat Berkat Investasi! 🍎</span>";
+                    } else {
+                        if (growthChart) {
+                            growthChart.data.datasets[0].borderColor = '#66BB6A';
+                            growthChart.data.datasets[0].backgroundColor = 'rgba(102, 187, 106, 0.2)';
+                        }
+                        chartStatus.innerHTML = "<span style='color: #2E7D32;'>🚀 Tumbuh Stabil!</span>";
+                    }
+                }
+            }
+
+            if (growthChart) {
+                growthChart.data.datasets[0].data = newPoints;
+                growthChart.update();
+            }
+        }
+
+        function cekMolekul() {
+            const placedAtoms = dropzone.querySelectorAll('.dropped-atom');
+            if(placedAtoms.length === 0) {
+                mascotText.innerHTML = "Pilih atom dari Gudang Atom lalu racik terlebih dahulu!";
+                return;
+            }
+
+            let countBlue = 0, countRed = 0, countOrange = 0;
+            placedAtoms.forEach(atom => {
+                if(atom.dataset.type === 'biru') countBlue++;
+                if(atom.dataset.type === 'merah') countRed++;
+                if(atom.dataset.type === 'orange') countOrange++;
+            });
+
+            if (countRed > 0) unlockBadge('badge-penabung');
+            if (countOrange > 0) unlockBadge('badge-investor');
+
+            if (countRed === 0 && countOrange === 0) {
+                mascotText.innerHTML = "<b>Ups!</b> Tanpa 🪙 <b>Tabungan</b> atau 🍎 <b>Investasi</b>, pohonmu tidak punya nutrisi jangka panjang.";
+            } else if (countBlue > (countRed + countOrange)) {
+                mascotText.innerHTML = "<b>Keinginan Kebanyakan!</b> Hiasan berlebihan bikin racikanmu keberatan.";
+            } else if (countOrange > 0) {
+                unlockBadge('badge-pohon');
+                unlockBadge('badge-pakar');
+                mascotText.innerHTML = "<b>Hebat! 🍎</b> Ada Atom Investasi! Pohonmu bakal berbuah manis terus-menerus!";
+            } else {
+                unlockBadge('badge-pohon');
+                unlockBadge('badge-pakar');
+                mascotText.innerHTML = "<b>Keren!</b> Racikan atom berada dalam kondisi seimbang dan terawat.";
+            }
+        }
+
+        function unlockBadge(badgeId) {
+            const badge = document.getElementById(badgeId);
+            if (badge && !badge.classList.contains('unlocked')) badge.classList.add('unlocked');
+        }
+
+        function resetMolekul() {
+            dropzone.innerHTML = '<div class="drop-placeholder" id="placeholder">Sentuh/tarik atom ke sini...</div>';
+            mascotText.innerHTML = "Ayo racik kembali kombinasi atom baru yang kamu mau!";
+            updateRealtimeChart();
+        }
+    </script>
+</body>
+</html>
