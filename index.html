@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AtomNomi - Belajar Kelola Uang dengan Atom Ajaib</title>
+    
+    <!-- Library Grafik Chart.js & Google Font -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Fredoka', cursive, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(130deg, #E0F7FA 0%, #FFF9C4 50%, #FCE4EC 100%);
+            color: #2C3E50;
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #6C5CE7;
+            margin: 0;
+            text-shadow: 2px 2px 0px #FFF, 3px 3px 0px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #57606F;
+            margin-top: 5px;
+        }
+
+        /* 1. PALING ATAS: MASKOT ATO & APA ITU ATOM */
+        .mascot-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+            border: 3px solid #00B894;
+            position: relative;
+            z-index: 5;
+        }
+
+        .mascot-avatar {
+            width: 65px;
+            height: 65px;
+            background: #E8F8F5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            border: 3px solid #55E6C1;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            animation: sproutGlow 2s infinite ease-in-out;
+            flex-shrink: 0;
+        }
+
+        @keyframes sproutGlow {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(85, 230, 193, 0.4); }
+            50% { transform: scale(1.06); box-shadow: 0 0 0 10px rgba(85, 230, 193, 0); }
+        }
+
+        .speech-bubble-container {
+            flex: 1;
+        }
+
+        .speech-title {
+            font-size: 12px;
+            color: #00B894;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .speech-bubble {
+            font-size: 14px;
+            color: #2D3436;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .btn-ask-ato {
+            background: linear-gradient(135deg, #00B894, #55E6C1);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+            display: inline-block;
+            touch-action: manipulation;
+        }
+
+        .btn-ask-ato:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.12);
+        }
+
+        /* MODAL POPUP PENJELASAN ATOM */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #FFFFFF;
+            border-radius: 24px;
+            max-width: 450px;
+            width: 100%;
+            padding: 22px;
+            border: 4px solid #55E6C1;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+            text-align: center;
+            animation: popIn 0.25s ease-out;
+        }
+
+        .modal-mascot { font-size: 45px; margin-bottom: 5px; }
+        .modal-title { font-size: 20px; color: #00B894; margin: 0 0 10px 0; }
+        .modal-text {
+            font-size: 14px;
+            color: #2D3436;
+            line-height: 1.5;
+            background: #E8F8F5;
+            padding: 12px;
+            border-radius: 14px;
+            border: 2px dashed #55E6C1;
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .btn-modal-close {
+            background: #6C5CE7;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+            width: 100%;
+            touch-action: manipulation;
+        }
+
+        /* 2. TENGAH: ARENA GAME (GUDANG & MEJA RACIKAN) */
+        .playground {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .playground { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+            border: 3px solid #74B9FF;
+        }
+
+        .card-title {
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #0984E3;
+            text-align: center;
+        }
+
+        .mobile-hint {
+            font-size: 12px;
+            color: #6C5CE7;
+            text-align: center;
+            margin-bottom: 12px;
+            font-weight: bold;
+            background: #F0EDFF;
+            padding: 6px;
+            border-radius: 10px;
+        }
+
+        .atom-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* ATOM DRAGGABLE & TAPPABLE */
+        .atom {
+            padding: 12px 15px;
+            border-radius: 14px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.12);
+            transition: transform 0.1s;
+            /* MENCEGAH SCROLL SAAT DRAG DI HP */
+            touch-action: none; 
+        }
+
+        .atom:active { transform: scale(0.97); }
+        .atom.green { background: #00B894; }
+        .atom.red   { background: #FF7675; }
+        .atom.blue  { background: #0984E3; }
+
+        /* DROPZONE MEJA RACIKAN */
+        .drop-area {
+            min-height: 150px;
+            border: 3px dashed #B2BEC3;
+            border-radius: 18px;
+            padding: 10px;
+            background: #F8FAF1;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 8px;
+            margin-bottom: 12px;
+            transition: background 0.2s;
+        }
+
+        .drop-area.drag-over {
+            background: #E8F8F5;
+            border-color: #00B894;
+        }
+
+        .drop-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #B2BEC3;
+            font-size: 13px;
+            min-height: 120px;
+            text-align: center;
+        }
+
+        .dropped-atom {
+            padding: 8px 12px;
+            border-radius: 12px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+            animation: popIn 0.2s ease-out;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .remove-btn {
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-group { display: flex; gap: 8px; }
+
+        .btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+            transition: transform 0.1s;
+            touch-action: manipulation;
+        }
+
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.12); }
+        .btn-check { background: #6C5CE7; }
+        .btn-reset { background: #E17055; }
+
+        /* 3. BAWAH: GRAFIK POHON KEUANGAN */
+        .chart-section {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.12);
+            margin-bottom: 20px;
+            border: 3px solid #A29BFE;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            color: #2D3436;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        /* 4. PALING BAWAH: LEMARI LENCANA & PRESTASI */
+        .badge-section {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 18px;
+            border: 3px solid #FDCB6E;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .badge-card {
+            background: #F8F9FA;
+            border: 2px dashed #B2BEC3;
+            border-radius: 16px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .badge-icon {
+            font-size: 32px;
+            margin-bottom: 6px;
+            filter: grayscale(100%);
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+
+        .badge-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #B2BEC3;
+        }
+
+        .badge-desc {
+            font-size: 10px;
+            color: #B2BEC3;
+            margin-top: 3px;
+        }
+
+        /* Lencana yang Terbuka (Unlocked) */
+        .badge-card.unlocked {
+            background: linear-gradient(135deg, #FFF9E6, #FFF0C2);
+            border: 2px solid #FDCB6E;
+            box-shadow: 0 4px 10px rgba(253, 203, 110, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .badge-card.unlocked .badge-icon {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .badge-card.unlocked .badge-name {
+            color: #D63031;
+        }
+
+        .badge-card.unlocked .badge-desc {
+            color: #2D3436;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake { animation: shake 0.4s; border-color: #FF7675 !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- JUDUL APLIKASI -->
+        <div class="header">
+            <h1>⚛️️ AtomNomi</h1>
+            <p>Racik Atom Uangmu & Lihat Grafiknya Tumbuh!</p>
+        </div>
+
+        <!-- 1. TEMAN BELAJAR ATO & APA ITU ATOM (PALING ATAS) -->
+        <div class="mascot-card">
+            <div class="mascot-avatar">🌱</div>
+            <div class="speech-bubble-container">
+                <div class="speech-title">💬 Teman Belajar: Ato si Biji Benih</div>
+                <div class="speech-bubble" id="mascot-text">
+                    Halo! Aku <b>Ato</b>. Ketuk tombol di bawah kalau mau tahu rahasia atom ajaib ya!
+                </div>
+                <button type="button" class="btn-ask-ato" id="btn-ask-ato">💡 Klik di Sini: Apa Itu Atom?</button>
+            </div>
+        </div>
+
+        <!-- 2. ARENA GAME: GUDANG & MEJA RACIKAN (TENGAH) -->
+        <div class="playground">
+            <!-- Gudang Atom -->
+            <div class="card">
+                <h3 class="card-title">🎒 Gudang Atom</h3>
+                <div class="mobile-hint">👇 Ketuk/Geser Atom ke Meja Racikan!</div>
+                <div class="atom-list">
+                    <div class="atom green" draggable="true" data-type="hijau">
+                        <span>🥗 Kebutuhan</span>
+                        <span>🟢</span>
+                    </div>
+                    <div class="atom red" draggable="true" data-type="merah">
+                        <span>🪙 Tabungan</span>
+                        <span>🔴</span>
+                    </div>
+                    <div class="atom blue" draggable="true" data-type="biru">
+                        <span>🧸 Keinginan</span>
+                        <span>🔵</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meja Racikan Molekul -->
+            <div class="card">
+                <h3 class="card-title">🔮 Meja Racikan Molekul</h3>
+                <div class="drop-area" id="dropzone">
+                    <div class="drop-placeholder" id="placeholder">Sentuh atau tarik atom ke sini...</div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-check" id="btn-check" onclick="cekMolekul()">⚡ Cek Hasil</button>
+                    <button type="button" class="btn btn-reset" id="btn-reset" onclick="resetMolekul()">🔄 Bersihkan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. GRAFIK POHON KEUANGAN (BAWAH 1) -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <div class="chart-title">📈 Pohon Keuangan Ajaib</div>
+                <div id="chart-status" style="font-size: 13px; font-weight: bold; color: #6C5CE7;">
+                    Status: Netral (Belum Ada Atom)
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 4. LEMARI LENCANA & PRESTASI (PALING BAWAH) -->
+        <div class="badge-section">
+            <h3 style="margin: 0; text-align: center; color: #D63031;">🏆 Lemari Lencana & Prestasi</h3>
+            <div class="badge-grid">
+                <!-- Lencana 1 -->
+                <div class="badge-card unlocked" id="badge-tunas">
+                    <div class="badge-icon">🌱</div>
+                    <div class="badge-name">Tunas Muda</div>
+                    <div class="badge-desc">Mulai belajar atom</div>
+                </div>
+                <!-- Lencana 2 -->
+                <div class="badge-card" id="badge-penabung">
+                    <div class="badge-icon">🪙</div>
+                    <div class="badge-name">Penabung Super</div>
+                    <div class="badge-desc">Tambahkan Tabungan</div>
+                </div>
+                <!-- Lencana 3 -->
+                <div class="badge-card" id="badge-pohon">
+                    <div class="badge-icon">🌳</div>
+                    <div class="badge-name">Pohon Raksasa</div>
+                    <div class="badge-desc">Grafik naik tinggi</div>
+                </div>
+                <!-- Lencana 4 -->
+                <div class="badge-card" id="badge-hemat">
+                    <div class="badge-icon">🛡️</div>
+                    <div class="badge-name">Anak Hemat</div>
+                    <div class="badge-desc">Tanpa Keinginan berlebih</div>
+                </div>
+                <!-- Lencana 5 -->
+                <div class="badge-card" id="badge-pakar">
+                    <div class="badge-icon">⚡</div>
+                    <div class="badge-name">Pakar Racikan</div>
+                    <div class="badge-desc">Racikan seimbang</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP PENJELASAN ATOM -->
+    <div class="modal-overlay" id="atomModal">
+        <div class="modal-card">
+            <div class="modal-mascot">🌱✨</div>
+            <h2 class="modal-title">💡 Belajar Mudah: Apa Itu Atom?</h2>
+            <div class="modal-text">
+                "Pernahkah kamu melihat <b>Biji Benih (🌱)</b> yang sangat kecil? Jika disiram tiap hari, biji mungil itu bisa tumbuh jadi <b>Pohon Raksasa (🌳)</b>!<br><br>
+                <b>Atom</b> itu seperti biji penyusun kebiasaanmu:<br>
+                • 🥗 <b>Atom Kebutuhan</b> = Makanan & Buku<br>
+                • 🪙 <b>Atom Tabungan</b> = Bekal Masa Depan<br>
+                • 🧸 <b>Atom Keinginan</b> = Mainan & Jajan<br><br>
+                Jika kamu rajin menumpuk <b>Atom Tabungan (🔴)</b> tiap hari, pohon keuanganmu akan tumbuh raksasa!"
+            </div>
+            <button type="button" class="btn-modal-close" id="btn-close-modal">Aku Paham, Ayo Tanam Atom! 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const dropzone = document.getElementById('dropzone');
+        const placeholder = document.getElementById('placeholder');
+        const mascotText = document.getElementById('mascot-text');
+        const chartStatus = document.getElementById('chart-status');
+        const askAtoBtn = document.getElementById('btn-ask-ato');
+        const modalOverlay = document.getElementById('atomModal');
+        const closeModalBtn = document.getElementById('btn-close-modal');
+        const atoms = document.querySelectorAll('.atom');
+
+        // Initialized Chart Safely
+        let growthChart = null;
+
+        try {
+            const canvas = document.getElementById('growthChart');
+            if (canvas && typeof Chart !== 'undefined') {
+                const ctx = canvas.getContext('2d');
+                const months = ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'B12'];
+                
+                growthChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Nilai Pertumbuhan',
+                            data: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+                            borderColor: '#6C5CE7',
+                            backgroundColor: 'rgba(108, 92, 231, 0.15)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#A29BFE'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, max: 100 } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn("Chart warning:", e);
+        }
+
+        // FUNGSI MODAL (KLIK & TOUCH)
+        function openModal() { if (modalOverlay) modalOverlay.style.display = 'flex'; }
+        function closeModal() { if (modalOverlay) modalOverlay.style.display = 'none'; }
+
+        if (askAtoBtn) {
+            askAtoBtn.addEventListener('click', openModal);
+            askAtoBtn.addEventListener('touchend', (e) => { e.preventDefault(); openModal(); });
+        }
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', closeModal);
+            closeModalBtn.addEventListener('touchend', (e) => { e.preventDefault(); closeModal(); });
+        }
+
+        // FUNGSI TAMBAH ATOM KE MEJA
+        function addAtomToDropzone(type) {
+            if (placeholder) placeholder.style.display = 'none';
+
+            const newAtom = document.createElement('div');
+            newAtom.classList.add('dropped-atom', type === 'hijau' ? 'green' : type === 'biru' ? 'blue' : 'red');
+            newAtom.dataset.type = type;
+            
+            const title = type === 'hijau' ? '🥗 Kebutuhan' : type === 'biru' ? '🧸 Keinginan' : '🪙 Tabungan';
+            newAtom.innerHTML = `${title} <span class="remove-btn">✖</span>`;
+            
+            const removeHandler = function(e) {
+                e.stopPropagation();
+                newAtom.remove();
+                if (dropzone.querySelectorAll('.dropped-atom').length === 0) {
+                    if (placeholder) placeholder.style.display = 'flex';
+                }
+                updateRealtimeChart();
+            };
+
+            newAtom.addEventListener('click', removeHandler);
+            newAtom.addEventListener('touchend', removeHandler);
+
+            dropzone.appendChild(newAtom);
+            updateRealtimeChart();
+        }
+
+        // 1. DUKUNGAN TAP LANGSUNG & DRAG (MENCEGAH SCROLL LAYAR HP SAAT DRAG)
+        let activeTouchType = null;
+        let touchClone = null;
+
+        atoms.forEach(atom => {
+            // Tap/Klik langsung
+            atom.addEventListener('click', () => {
+                addAtomToDropzone(atom.dataset.type);
+            });
+
+            // Touch Drag (Mobile) tanpa scroll layar
+            atom.addEventListener('touchstart', (e) => {
+                activeTouchType = atom.dataset.type;
+                const touch = e.touches[0];
+                
+                touchClone = atom.cloneNode(true);
+                touchClone.style.position = 'fixed';
+                touchClone.style.opacity = '0.85';
+                touchClone.style.pointerEvents = 'none';
+                touchClone.style.zIndex = '10000';
+                touchClone.style.width = atom.offsetWidth + 'px';
+                touchClone.style.left = (touch.clientX - atom.offsetWidth / 2) + 'px';
+                touchClone.style.top = (touch.clientY - atom.offsetHeight / 2) + 'px';
+                document.body.appendChild(touchClone);
+            }, { passive: true });
+
+            atom.addEventListener('touchmove', (e) => {
+                if (!touchClone) return;
+                // PENTING: Mencegah layar scroll saat memindahkan atom
+                if (e.cancelable) e.preventDefault(); 
+                
+                const touch = e.touches[0];
+                touchClone.style.left = (touch.clientX - touchClone.offsetWidth / 2) + 'px';
+                touchClone.style.top = (touch.clientY - touchClone.offsetHeight / 2) + 'px';
+            }, { passive: false }); // passive: false agar preventDefault bekerja!
+
+            atom.addEventListener('touchend', (e) => {
+                if (!touchClone) return;
+                const touch = e.changedTouches[0];
+                const dropzoneRect = dropzone.getBoundingClientRect();
+
+                if (
+                    touch.clientX >= dropzoneRect.left &&
+                    touch.clientX <= dropzoneRect.right &&
+                    touch.clientY >= dropzoneRect.top &&
+                    touch.clientY <= dropzoneRect.bottom
+                ) {
+                    addAtomToDropzone(activeTouchType);
+                }
+
+                if (touchClone) {
+                    touchClone.remove();
+                    touchClone = null;
+                }
+                activeTouchType = null;
+            });
+
+            // Desktop Drag
+            atom.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', atom.dataset.type);
+            });
+        });
+
+        // Dropzone Desktop Events
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('drag-over');
+        });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('drag-over');
+            const type = e.dataTransfer.getData('text/plain');
+            if (type) addAtomToDropzone(type);
+        });
+
+        // 2. UPDATER GRAFIK
+        function updateRealtimeChart() {
+            const placedAtoms = dropzone.querySelectorAll('.dropped-atom');
+            let countBlue = 0, countGreen = 0, countRed = 0;
+
+            placedAtoms.forEach(atom => {
+                if(atom.dataset.type === 'biru') countBlue++;
+                if(atom.dataset.type === 'hijau') countGreen++;
+                if(atom.dataset.type === 'merah') countRed++;
+            });
+
+            let newPoints = [];
+            let base = 10;
+
+            if (countBlue > countGreen || countBlue > countRed) {
+                for(let i = 0; i < 12; i++) {
+                    base = Math.max(1, base * 0.85);
+                    newPoints.push(base.toFixed(1));
+                }
+                if (growthChart) {
+                    growthChart.data.datasets[0].borderColor = '#FF7675';
+                    growthChart.data.datasets[0].backgroundColor = 'rgba(255, 118, 117, 0.2)';
+                }
+                chartStatus.innerHTML = "<span style='color: #FF7675;'>⚠️ Kebiasaan: Pohon Layu (Boros)</span>";
+            } 
+            else if (countRed > 0 || countGreen > 0) {
+                let multiplier = 1 + (countRed * 0.15) + (countGreen * 0.05);
+                for(let i = 0; i < 12; i++) {
+                    base = base * multiplier;
+                    newPoints.push(Math.min(100, base).toFixed(1));
+                }
+                if (growthChart) {
+                    growthChart.data.datasets[0].borderColor = '#00B894';
+                    growthChart.data.datasets[0].backgroundColor = 'rgba(0, 184, 148, 0.2)';
+                }
+                chartStatus.innerHTML = "<span style='color: #00B894;'>🚀 Pohon Tumbuh Subur!</span>";
+            } else {
+                newPoints = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+                if (growthChart) growthChart.data.datasets[0].borderColor = '#6C5CE7';
+                chartStatus.innerHTML = "Status: Netral";
+            }
+
+            if (growthChart) {
+                growthChart.data.datasets[0].data = newPoints;
+                growthChart.update();
+            }
+        }
+
+        // 3. EVALUASI DAN BUKA LENCANA DYNAMIS
+        function cekMolekul() {
+            const placedAtoms = dropzone.querySelectorAll('.dropped-atom');
+            if(placedAtoms.length === 0) {
+                mascotText.innerHTML = "Ayo sentuh/tarik atom dari Gudang Atom ke Meja Racikan dulu!";
+                return;
+            }
+
+            let countBlue = 0, countGreen = 0, countRed = 0;
+            placedAtoms.forEach(atom => {
+                if(atom.dataset.type === 'biru') countBlue++;
+                if(atom.dataset.type === 'hijau') countGreen++;
+                if(atom.dataset.type === 'merah') countRed++;
+            });
+
+            // Logika Pembukaan Lencana
+            if (countRed > 0) unlockBadge('badge-penabung');
+            if (countBlue === 0 && countRed > 0) unlockBadge('badge-hemat');
+
+            if (countBlue > countGreen || countBlue > countRed) {
+                dropzone.classList.add('shake');
+                mascotText.innerHTML = "<b>Awas Layu!</b> Keinginanmu (🧸) lebih banyak dari Kebutuhan/Tabungan. Pohon pertumbuhannya jadi anjlok!";
+                setTimeout(() => dropzone.classList.remove('shake'), 400);
+            } else {
+                unlockBadge('badge-pohon');
+                unlockBadge('badge-pakar');
+                mascotText.innerHTML = `<b>Luar Biasa!</b> Racikan atommu sangat seimbang. Pohon keuanganmu tumbuh raksasa! 🎉`;
+            }
+        }
+
+        function unlockBadge(badgeId) {
+            const badge = document.getElementById(badgeId);
+            if (badge && !badge.classList.contains('unlocked')) {
+                badge.classList.add('unlocked');
+            }
+        }
+
+        function resetMolekul() {
+            dropzone.innerHTML = '<div class="drop-placeholder" id="placeholder">Sentuh atau tarik atom ke sini...</div>';
+            mascotText.innerHTML = "Ayo racik susunan atom baru dan perhatikan perubahan pertumbuhannya!";
+            updateRealtimeChart();
+        }
+    </script>
+</body>
+</html>
