@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AtomNomi - Small Atoms, Big Compound Impact</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial', sans-serif;
+            background-color: #f4f9ff;
+            color: #2c3e50;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Banner Konsep Atomic Habits */
+        .atomic-habits-banner {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(108, 92, 231, 0.2);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .concept-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            margin: 5px;
+        }
+        .highlight-num {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffeaa7;
+        }
+
+        /* Maskot Ato */
+        .mascot-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .mascot-img {
+            width: 75px;
+            height: 75px;
+            background-color: #fdcb6e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .speech-bubble {
+            background: #fff;
+            padding: 12px 20px;
+            border-radius: 18px;
+            margin-left: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            max-width: 450px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        /* Arena Bermain */
+        .game-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .card-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            width: 320px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        /* Balok Atom */
+        .atom {
+            width: 65px;
+            height: 65px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 15px;
+            margin: 6px;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+        .atom:hover { transform: scale(1.05); }
+        .atom.green { background-color: #00b894; }
+        .atom.blue { background-color: #0984e3; }
+        .atom.red { background-color: #d63031; }
+
+        /* Dropzone Cetak Biru */
+        .blueprint-zone {
+            min-height: 140px;
+            border: 3px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 10px;
+            background-color: #f8fafc;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 5px;
+        }
+
+        /* Panel Hasil Compound */
+        .compound-result {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e3f2fd;
+            border-radius: 12px;
+            font-size: 13px;
+            text-align: left;
+            display: none;
+        }
+
+        /* Animasi Shake */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake { animation: shake 0.4s; border-color: #ff7675 !important; background-color: #ffeaa7 !important; }
+
+        /* Galeri Lencana */
+        .badge-gallery {
+            margin-top: 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .badges-list {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .badge-item {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .badge-item.unlocked { background: linear-gradient(135deg, #fdcb6e, #e17055); border: 3px solid #ffeaa7; }
+        .badge-item.locked { background-color: #b2bec3; color: #636e72; border: 3px dashed #dfe6e9; }
+        .badge-item.locked::after {
+            content: attr(data-hint);
+            position: absolute;
+            bottom: -42px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d3436;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+        .badge-item.locked:hover::after { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Konsep Atomic Habits -->
+    <div class="atomic-habits-banner">
+        <div>
+            <h2 style="margin: 0; font-size: 20px;">⚛️ Konsep AtomNomi: Efek Kompon (Compound)</h2>
+            <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.9;">1 Atom Kebiasaan Kecil Setiap Hari = Perubahan Raksasa di Masa Depan!</p>
+        </div>
+        <div style="display: flex;">
+            <div class="concept-card">
+                <div style="font-size: 10px;">Rutin 1% Konsisten</div>
+                <div class="highlight-num">1.01³⁶⁵ = 37.8x</div>
+            </div>
+            <div class="concept-card">
+                <div style="font-size: 10px;">Mengabaikan Atom</div>
+                <div class="highlight-num">0.99³⁶⁵ = 0.03x</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maskot -->
+    <div class="mascot-area">
+        <div class="mascot-img">Ato</div>
+        <div class="speech-bubble" id="mascot-text">
+            Halo! Aku Ato. Susun <b>Atom Uang</b> kamu di Cetak Biru. Lihat bagaimana atom tabungan kecil bisa membentuk <b>Senyawa Hasil Kompon</b> yang sangat besar!
+        </div>
+    </div>
+
+    <!-- Area Game -->
+    <div class="game-container">
+        <!-- Bank Atom -->
+        <div class="card-box">
+            <h3 style="margin-top:0;">Gudang Atom</h3>
+            <div class="atom green" draggable="true" data-type="hijau">
+                <span>🟢</span>
+                <span>Kebutuhan</span>
+            </div>
+            <div class="atom blue" draggable="true" data-type="biru">
+                <span>🔵</span>
+                <span>Keinginan</span>
+            </div>
+            <div class="atom red" draggable="true" data-type="merah">
+                <span>🔴</span>
+                <span>Tabungan</span>
+            </div>
+            <p style="font-size: 11px; color: #7f8c8d; margin-top: 15px;">Tarik balok atom di atas ke Cetak Biru Molekul.</p>
+        </div>
+
+        <!-- Cetak Biru Senyawa -->
+        <div class="card-box">
+            <h3 style="margin-top:0;">Cetak Biru Senyawa</h3>
+            <div class="blueprint-zone" id="dropzone"></div>
+            
+            <button onclick="cekMolekul()" style="margin-top: 15px; padding: 10px 18px; background: #6c5ce7; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">Proses Senyawa</button>
+            <button onclick="resetMolekul()" style="margin-top: 15px; padding: 10px 18px; background: #ff7675; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">Reset</button>
+
+            <!-- Panel Compound -->
+            <div class="compound-result" id="compound-panel">
+                <b>📊 Proyeksi Compound (1 Tahun):</b>
+                <div id="compound-text" style="margin-top: 5px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buku Prestasi (Galeri Lencana) -->
+    <div class="badge-gallery">
+        <h3 style="margin: 0;">🏆 Buku Prestasi Ato</h3>
+        <p style="font-size: 12px; color: #636e72; margin: 5px 0 0 0;">Lengkapi molekul seimbang untuk membuka semua lencana!</p>
+        <div class="badges-list">
+            <div class="badge-item unlocked">Master<br>Atom 1%</div>
+            <div class="badge-item locked" data-hint="Kumpulkan 3 Atom Merah (Tabungan) dalam 1 Senyawa">?</div>
+            <div class="badge-item locked" data-hint="Buat Senyawa Tanpa Atom Biru (Keinginan)">?</div>
+            <div class="badge-item locked" data-hint="Buka Efek Compound 37x Lipat">?</div>
+        </div>
+    </div>
+
+    <script>
+        const atoms = document.querySelectorAll('.atom');
+        const dropzone = document.getElementById('dropzone');
+        const mascotText = document.getElementById('mascot-text');
+        const compoundPanel = document.getElementById('compound-panel');
+        const compoundText = document.getElementById('compound-text');
+
+        atoms.forEach(atom => {
+            atom.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', e.target.dataset.type);
+            });
+        });
+
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const type = e.dataTransfer.getData('text/plain');
+            
+            const newAtom = document.createElement('div');
+            newAtom.classList.add('atom', type === 'hijau' ? 'green' : type === 'biru' ? 'blue' : 'red');
+            newAtom.dataset.type = type;
+            newAtom.style.width = '45px';
+            newAtom.style.height = '45px';
+            newAtom.style.fontSize = '9px';
+            newAtom.innerText = type === 'hijau' ? '🟢' : type === 'biru' ? '🔵' : '🔴';
+            
+            dropzone.appendChild(newAtom);
+        });
+
+        function cekMolekul() {
+            const placedAtoms = dropzone.querySelectorAll('.atom');
+            if(placedAtoms.length === 0) {
+                mascotText.innerHTML = "Cetak birunya masih kosong! Masukkan atom dulu yuk.";
+                compoundPanel.style.display = 'none';
+                return;
+            }
+
+            let countBlue = 0, countGreen = 0, countRed = 0;
+            placedAtoms.forEach(atom => {
+                if(atom.dataset.type === 'biru') countBlue++;
+                if(atom.dataset.type === 'hijau') countGreen++;
+                if(atom.dataset.type === 'merah') countRed++;
+            });
+
+            // Evaluasi Kebiasaan (Atomic Habits Concept)
+            if(countBlue > (countGreen + countRed)) {
+                dropzone.classList.add('shake');
+                mascotText.innerHTML = "<b>Bahaya Runtuh!</b> Kebiasaan Atom Biru (Keinginan) terlalu dominan. Dalam jangka panjang, aset kamu bisa menyusut ke 0.03x!";
+                compoundPanel.style.display = 'block';
+                compoundText.innerHTML = "<span style='color: #d63031;'>⚠️ Pertumbuhan Negatif! Kebiasaan konsumtif menghambat akumulasi aset jangka panjang.</span>";
+                setTimeout(() => dropzone.classList.remove('shake'), 400);
+            } else {
+                // Efek Compound Berhasil
+                const compoundMultiplier = (1 + (countRed * 0.1)).toFixed(1);
+                mascotText.innerHTML = `<b>Senyawa Hebat Terbentuk!</b> Kamu memasukkan ${countRed} Atom Tabungan. Kebiasaan kecil ini akan berlipat ganda di masa depan!`;
+                
+                compoundPanel.style.display = 'block';
+                compoundText.innerHTML = `
+                    • Atom Tabungan: <b>${countRed} unit</b><br>
+                    • Potensi Efek Compound 1 Tahun: <b>${(countRed * 37.8).toFixed(1)}x pertumbuhan nilai!</b><br>
+                    • Status: <span style='color: #00b894; font-weight:bold;'>Senyawa Finansial Sehat ✨</span>
+                `;
+            }
+        }
+
+        function resetMolekul() {
+            dropzone.innerHTML = '';
+            compoundPanel.style.display = 'none';
+            mascotText.innerHTML = "Ayo racik kombinasi atom baru dan lihat efek compound-nya!";
+        }
+    </script>
+</body>
+</html>
